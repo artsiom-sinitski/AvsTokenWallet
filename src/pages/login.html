@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../css/loginstyle.css" rel="stylesheet">
+</head>
+
+
+<body onload="document.getElementById('id01').style.display='block'">
+        <div id="id01" class="modal">
+        <form class="modal-content">
+            <div class="imgcontainer">
+            <img src="../images/bitcoin-nodes.png" alt="Avatar" class="avatar">
+            </div>
+
+            <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input id="uname" type="text" placeholder="Enter Username" name="uname" required autofocus>
+
+            <label for="psw"><b>Password</b></label>
+            <input id="psw" type="password" placeholder="Enter Password" name="psw" required>
+            <input id="btnLogin" type="button" value="Login" onclick=validateCredentials()> <br/>
+            <label>
+                <input type="checkbox" name="remember"> Remember me
+            </label>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+            </div>
+        </form>
+        </div>
+
+        <script src="../js/md5.min.js"></script>
+        <script language="javascript" type="text/javascript">
+            function validateCredentials() { // md5 passwrod hash
+                let uni_hash = "b882c5286edda12098682a7af6fef1a0";
+                let pwi_hash = "b882c5286edda12098682a7af6fef1a0";
+
+                let uni = document.getElementById("uname");
+                let pwi = document.getElementById("psw");
+
+                if (md5(uni.value) == uni_hash && md5(pwi.value) == pwi_hash) {
+                        window.open("../index.html#valid", "_self");
+                } else {
+                    alert("Invalid user name or password! Try again..."); 
+                    pwi.value = '';
+
+                    uni.scrollIntoView();
+                    uni.value = '';
+                    uni.focus();
+                }   
+            }
+        </script>
+
+</body>
+</html>
