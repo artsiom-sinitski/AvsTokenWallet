@@ -28,6 +28,17 @@
           border-color: rgba(165, 8, 8, 0.8);
         }
 
+        button[id=btnRefresh] {
+          border-radius: 50%;
+          height: 26px;
+          width: 26px;
+          background: url('./images/Refresh-arrow.png');
+          background-color: #428BFF;
+          background-repeat: no-repeat;
+          background-position:center;
+          background-size: 19px;
+        }
+
         input[id=AvsTransferAddress] {
           width: 60%;
         }
@@ -81,9 +92,11 @@
 
       <div class="row">
           <div class="container" style="background-color:#f1f1f1;width:auto; padding:5px; min-width: 240px;">
-              <input class="btn btn-primary" id="btnLogout" type="button" value="Logout" onclick=doLogout()>
+              <input id="btnLogout" class="btn btn-primary" type="button" value="Logout" title="Logout" onclick=doLogout()>
           </div>
-          <h3 id="lbladdress" class="text-center">Public Address:</h3>
+          <h3 id="lbladdress" class="text-center">Public Address: 
+            <button id="btnRefresh" class="btn btn-primary" title="Refresh" onclick="location.reload(true);">
+              </button></h3>
           <h4 class="text-center"><b>0x</b><span id="accountAddr"></span></h4>
           <hr/>
           <br/>
