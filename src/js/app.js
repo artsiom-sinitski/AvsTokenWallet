@@ -29,9 +29,9 @@ App = {
           App.contracts.AvsToken.setProvider(App.web3Provider);
 
           // Use the contract to retieve account ballance and tx's history
+          App.getAccountTxHistory();
           return App.getBalance();       
       });
-      App.getAccountTxHistory();
       return App.bindEvents();
   },
 
@@ -76,22 +76,21 @@ App = {
           
           web3.eth.getBlockNumber(function(error, number) {
               if (error) { console.log(error); }
-
               latestBlockNum = number;
               for(let i = startBlockNum; i <= latestBlockNum; i++) {
+
                 web3.eth.getBlock(i, true, function(error, result) {
                     if (error) { console.log(error); } 
                     let block = result;
-                    //Doen't seem possible to retrieve each tx timestamp, will use the block's timestamp
+                    //Can't retrieve each tx's timestamp, so will use the block's timestamp
                     let options = {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric'};
                     let timestamp = new Date(block.timestamp*1000).toLocaleDateString("en-GB", options);
-    
                     if (block != null && block.transactions != null) {
                       block.transactions.forEach(function(tx) {
-                        console.log("Each Tx: ", tx);
+                          // console.log("Each Tx: ", tx);
                           if ( (accAddress == tx.from || accAddress == tx.to)
-                              && tx.to != "0x0" /*deployement process*/) {                
-                            
+                              && tx.to != "0x0" /*contract deployment*/) {                
+                              /*
                               console.log("   tx hash         : " + tx.hash + "\n"
                                         + "   nonce           : " + tx.nonce + "\n"
                                         + "   blockHash       : " + tx.blockHash + "\n"
@@ -103,22 +102,13 @@ App = {
                                         + "   gasPrice        : " + tx.gasPrice + "\n"
                                         + "   gas             : " + tx.gas + "\n"
                                         + "   timestamp       : " + timestamp + "\n");
-                              
+                              */ /*
                               web3.eth.getTransactionReceipt(tx.hash, function(error, result) {
                                   if (error) { console.log(error); }
-                                  console.log("Tx Receipt:", result);
-                              });
-    
-                              let rowHTML = "<tr>";
-                              rowHTML += "<td title=\"" + tx.hash + "\">" + tx.hash + "</td>";
-                              rowHTML += "<td title=\"Transfer\">Transfer</td>";
-                              rowHTML += "<td title=\"" + timestamp + "\">" + timestamp + "</td>";
-                              rowHTML += "<td title=\"" + tx.from + "\">" + tx.from + "</td>";
-                              rowHTML += "<td title=\"" + tx.to + "\">" + tx.to + "</td>";
-                              rowHTML += "<td title=\"" + tx.value + "\">" + tx.value + "</td>";
-                              rowHTML += "</tr>";
-                    
-                              $(rowHTML).prependTo('table tbody');
+                                  console.log("getTxReceipt() -> ", result);
+                              }); */
+
+                              App.generateHTMLandUpdateTxTable(tx, timestamp);
                           }
                       });
                     } else {
@@ -146,6 +136,7 @@ App = {
             return AvsTokenInstance.burn(amount);
         }).then(function(result) {
               alert('Burned ' + amount + ' AvS Token(s) successfuly!');
+              App.generateHTMLandUpdateTxTable(result, null);
               App.resetInputField();
               return App.getBalance();
         }).catch(function(err) {
@@ -166,41 +157,13 @@ App = {
     web3.eth.getAccounts(function(error, accounts) {
       if (error) { console.log(error); }
       var account = accounts[0];
-
       App.contracts.AvsToken.deployed
       ().then(function(instance) {
           AvsTokenInstance = instance;
           return AvsTokenInstance.transfer(toAddress, amount, {from: account, gas: 100000});
       }).then(function(result) {
-          // 'result' is an object with the following values:
-          //    -result.tx      => transaction hash, string
-          //    -result.receipt => Tx receipt object, which includes gas used
-          //    -result.logs    => array of decoded events triggered by the Tx
-          let txHash = result.tx;
-          let options = {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric'};
-          let txDateTime = new Date().toLocaleDateString("en-GB", options);
-          let txEvent = result.logs[0].event;
-          let txFrom = result.logs[0].args.from;
-          let txTo = result.logs[0].args.to;
-          let txValue = result.logs[0].args.value.c[0];
-          //let txGasUsed = result.receipt.gasUsed;
-          //let txStatus = result.receipt.status;       //'0x1' -> success, '0x0 -> failure' 
-
-          console.log(result);
-
-          //Construct a table row, fill it with tx details & attach it to the table
-          let rowHTML = "<tr>";
-              rowHTML += "<td title=\"" + txHash + "\">" + txHash + "</td>";
-              rowHTML += "<td title=\"" + txEvent + "\">" + txEvent + "</td>";
-              rowHTML += "<td title=\"" + txDateTime + "\">" + txDateTime + "</td>";
-              rowHTML += "<td title=\"" + txFrom + "\">" + txFrom + "</td>";
-              rowHTML += "<td title=\"" + txTo + "\">" + txTo + "</td>";
-              rowHTML += "<td title=\"" + txValue + "\">" + txValue + "</td>";
-              rowHTML += "</tr>";
-
-          $(rowHTML).prependTo('table tbody');
-
           alert('Transferred ' + amount + ' token(s) successfully!');
+          App.generateHTMLandUpdateTxTable(result, null);
           App.resetInputField();
           return App.getBalance();
       }).catch(function(err) {
@@ -209,14 +172,68 @@ App = {
     });
   },
 
+  
+  generateHTMLandUpdateTxTable: function(result, blockTimestamp) {
+      // 'result' is an object with the following values:
+      //   -result.tx      => transaction hash, string
+      //   -result.receipt => Tx receipt object, which includes gas used
+      //   -result.logs    => array of decoded events triggered by the Tx
+      let txHash;
+      let options;
+      let txDateTime;
+      let txEvent;
+      let index;
+      let txFrom;
+      let txTo;
+      let txValue;
+      //let txGasUsed;
+      //let txStatus;       //'0x1' -> success, '0x0 -> failure' */
+
+      if (blockTimestamp == null) { // this is fresh tx details coming from GUI
+          txHash = result.tx;
+          options = {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric'};
+          txDateTime = new Date().toLocaleDateString("en-GB", options);
+          txEvent = result.logs[0].event;
+          switch(txEvent) {
+            case "Transfer" : index = 0; break;
+            case "Burn" : index = 1; break;
+          }
+          txFrom = result.logs[index].args.from;
+          txTo = result.logs[index].args.to;
+          txValue = result.logs[0].args.value.c[0];
+          //txGasUsed = result.receipt.gasUsed;
+          //txStatus = result.receipt.status;
+      } else { // this is tx details from Blockchain logs
+          txHash = result.hash;
+          txDateTime = blockTimestamp;
+          txEvent = "Transfer";
+          txFrom = result.from;
+          txTo = result.to;
+          txValue = result.value;
+      }
+
+      //console.log('Result: ', result);
+
+      //Construct a table row and fill it with tx details
+      let rowHTML = "<tr>";
+          rowHTML += "<td title=\"" + txHash + "\">" + txHash + "</td>";
+          rowHTML += "<td title=\"" + txEvent + "\">" + txEvent + "</td>";
+          rowHTML += "<td title=\"" + txDateTime + "\">" + txDateTime + "</td>";
+          rowHTML += "<td title=\"" + txFrom + "\">" + txFrom + "</td>";
+          rowHTML += "<td title=\"" + txTo + "\">" + txTo + "</td>";
+          rowHTML += "<td title=\"" + txValue + "\">" + txValue + "</td>";
+          rowHTML += "</tr>";
+
+      $(rowHTML).prependTo('table tbody');
+  },
+
 
   resetInputField: function() {
-    $('#AvsTransferAddress').val('');
-    $('#AvsTransferAmount').val('');
-    $('#AvsBurnAmount').val('');
+      $('#AvsTransferAddress').val('');
+      $('#AvsTransferAmount').val('');
+      $('#AvsBurnAmount').val('');
   }
-
-};
+},
 
 
 $(function() {
