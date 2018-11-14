@@ -174,10 +174,6 @@ App = {
 
   
   generateHTMLandUpdateTxTable: function(result, blockTimestamp) {
-      // 'result' is an object with the following values:
-      //   -result.tx      => transaction hash, string
-      //   -result.receipt => Tx receipt object, which includes gas used
-      //   -result.logs    => array of decoded events triggered by the Tx
       let txHash;
       let options;
       let txDateTime;
