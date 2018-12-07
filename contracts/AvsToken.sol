@@ -17,37 +17,37 @@ contract AvsToken is StandardToken, StandardBurnableToken {
   
   // MODIFIERS
   modifier onlyByOwner() {
-    require(msg.sender == owner);
-    _;
+      require(msg.sender == owner);
+      _;
   }
   
   // CONSTRUCTOR
   constructor() public {
-    owner = msg.sender;
-	  totalSupply_ = INITIAL_SUPPLY;
-	  balances[msg.sender] = INITIAL_SUPPLY;
+      owner = msg.sender;
+      totalSupply_ = INITIAL_SUPPLY;
+      balances[msg.sender] = INITIAL_SUPPLY;
   }
 
   // SETTERS & GETTERS 
   function getName() public view returns (string) {
-       return name;
+      return name;
   }
 
   function getSymbol() public view returns (string) {
-        return symbol; 
+      return symbol; 
   }
 
   function getDecimals() public view returns(uint8) {
-        return decimals;
+      return decimals;
   }
 
   function setDecimals(uint8 precision) public onlyByOwner returns (uint8, bool) {
-        uint8 max = 32; // 2 ** 5
+      uint8 max = 32; // 2 ** 5
 
-        if (precision > max || precision < 0) return (precision, false);
+      if (precision > max || precision < 0) return (precision, false);
 
-        decimals = precision;
-        return (precision, true);
+      decimals = precision;
+      return (precision, true);
   }
 
   // CONTRACT FUNCTIONS
@@ -55,11 +55,11 @@ contract AvsToken is StandardToken, StandardBurnableToken {
    * @dev Transfers the current balance to the owner and terminates the contract.
    */
   function destroy() public onlyByOwner {
-        selfdestruct(owner);
+      selfdestruct(owner);
   }
 
   function destroyAndSend(address _recipient) public onlyByOwner {
-        selfdestruct(_recipient);
+      selfdestruct(_recipient);
   }
 
   /**
@@ -67,13 +67,13 @@ contract AvsToken is StandardToken, StandardBurnableToken {
    * @param _newOwner The address to transfer ownership to.
    */
   function transferOwnership(address _newOwner) public onlyByOwner {
-        _transferOwnership(_newOwner);
+      _transferOwnership(_newOwner);
   }
 
   function _transferOwnership(address _newOwner) internal {
-       require(_newOwner != address(0));
-       emit OwnershipTransferred(owner, _newOwner);
-       owner = _newOwner;
+      require(_newOwner != address(0));
+      emit OwnershipTransferred(owner, _newOwner);
+      owner = _newOwner;
   }
   
 }

@@ -86,31 +86,19 @@ App = {
                     let options = {timeZone: 'UTC', hour: 'numeric', minute: 'numeric', second: 'numeric'};
                     let timestamp = new Date(block.timestamp*1000).toLocaleDateString("en-GB", options);
                     if (block != null && block.transactions != null) {
-                      block.transactions.forEach(function(tx) {
-                          // console.log("Each Tx: ", tx);
-                          if ( (accAddress == tx.from || accAddress == tx.to)
-                              && tx.to != "0x0" /*contract deployment*/) {                
-                              /*
-                              console.log("   tx hash         : " + tx.hash + "\n"
-                                        + "   nonce           : " + tx.nonce + "\n"
-                                        + "   blockHash       : " + tx.blockHash + "\n"
-                                        + "   blockNumber     : " + tx.blockNumber + "\n"
-                                        + "   transactionIndex: " + tx.transactionIndex + "\n"
-                                        + "   from            : " + tx.from + "\n" 
-                                        + "   to              : " + tx.to + "\n"
-                                        + "   value           : " + tx.value.c[0] + "\n"
-                                        + "   gasPrice        : " + tx.gasPrice + "\n"
-                                        + "   gas             : " + tx.gas + "\n"
-                                        + "   timestamp       : " + timestamp + "\n");
-                              */ /*
-                              web3.eth.getTransactionReceipt(tx.hash, function(error, result) {
-                                  if (error) { console.log(error); }
-                                  console.log("getTxReceipt() -> ", result);
-                              }); */
+                        block.transactions.forEach(function(tx) {
+                            // console.log("Each Tx: ", tx);
+                            if ( (accAddress == tx.from || accAddress == tx.to)
+                                && tx.to != "0x0" /*contract deployment*/) {                
+                                /*
+                                web3.eth.getTransactionReceipt(tx.hash, function(error, result) {
+                                    if (error) { console.log(error); }
+                                    console.log("getTxReceipt() -> ", result);
+                                }); */
 
-                              App.generateHTMLandUpdateTxTable(tx, timestamp);
-                          }
-                      });
+                                App.generateHTMLandUpdateTxTable(tx, timestamp);
+                            }
+                        });
                     } else {
                         console.log("Transactions Block is null!");
                     }

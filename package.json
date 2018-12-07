@@ -1,19 +1,21 @@
 {
-  "name": "avstoken",
+  "name": "avstokenwallet",
   "version": "1.0.0",
-  "description": "",
+  "description": "AvsToken Wallet",
   "main": "truffle.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "dev": "lite-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:dev": "echo \"This is build:dev script stub!\"",
+    "build:prod": "echo \"This is build:prod script stub!\""
   },
   "author": "Artsiom Sinitski",
   "license": "",
   "devDependencies": {
-    "lite-server": "^2.3.0"
+  "lite-server": "^2.3.0"
   },
   "dependencies": {
     "openzeppelin-solidity": "^1.12.0"
